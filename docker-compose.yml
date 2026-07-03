@@ -1,3 +1,7 @@
+﻿# Urban Routing Benchmark — Docker Compose
+# Starts PostgreSQL 15 with pgRouting and Neo4j 5.13 containers
+# Usage: docker-compose up -d
+
 services:
   postgres:
     image: postgis/postgis:15-3.3
