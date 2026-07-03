@@ -12,3 +12,6 @@
 8. Benchmark Methodology for DBMS Comparison — controlled workload generation with configurable update frequency is the accepted approach for DBMS comparative studies.
 9. Plan Regression Detection — MD5 hashing of operator sequences from EXPLAIN/PROFILE output is a lightweight and reproducible plan-change detector.
 10. Urban Routing Under Congestion — edge-weight multipliers derived from incident proximity and speed ratios are empirically validated proxies for real congestion cost.
+
+## Summary
+These ten papers collectively establish the theoretical and empirical foundation for comparing graph and relational database systems under dynamic routing workloads, motivating the experimental design adopted in this study.
