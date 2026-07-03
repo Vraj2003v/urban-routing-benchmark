@@ -28,6 +28,15 @@ LIVE_REFRESH_INTERVAL_SEC = 60
 
 
 def load_config():
+    """Load configuration from settings.yaml.
+    
+    Returns:
+        dict: Config with postgres, neo4j, toronto, and experiment keys.
+        
+    Notes:
+        Called once at UpdateGenerator initialization.
+        Pattern and magnitude parameters read from experiment section.
+    """
     with open(CONFIG_PATH) as f:
         return yaml.safe_load(f)
 
