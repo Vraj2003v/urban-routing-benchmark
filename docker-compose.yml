@@ -1,0 +1,44 @@
+services:
+  postgres:
+    image: postgis/postgis:15-3.3
+    container_name: urban_routing_postgres
+    environment:
+      POSTGRES_USER: bench
+      POSTGRES_PASSWORD: bench123
+      POSTGRES_DB: routing_bench
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./config/init_postgres.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bench -d routing_bench"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  neo4j:
+    image: neo4j:5.13.0
+    container_name: urban_routing_neo4j
+    environment:
+      NEO4J_AUTH: neo4j/bench123
+      NEO4J_PLUGINS: '["apoc"]'
+      NEO4J_dbms_security_procedures_unrestricted: "apoc.*"
+      NEO4J_server_memory_heap_initial__size: "1G"
+      NEO4J_server_memory_heap_max__size: "2G"
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:7474 || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 8
+
+volumes:
+  postgres_data:
+  neo4j_data:
+  neo4j_logs:

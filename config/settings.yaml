@@ -1,0 +1,43 @@
+postgres:
+  host: localhost
+  port: 5432
+  database: routing_bench
+  user: bench
+  password: bench123
+
+neo4j:
+  uri: bolt://localhost:7687
+  user: neo4j
+  password: bench123
+
+toronto:
+  osm_area_id: 3444656
+  osm_bbox: "43.58,-79.64,43.86,-79.12"   # south,west,north,east
+  gtfs_url: "https://ckan0.cf.opendata.inter.prod-toronto.ca/dataset/ttc-routes-and-schedules/resource/ca43ac3d-3940-4315-889b-a768f670c1f6/download/TTC_Routes_and_Schedules_Data.zip"
+  use_geofabrik: false   # set true to use Geofabrik PBF instead of Overpass
+
+  # ── Live data feed URLs ───────────────────────────────────────────────────
+  # TTC GTFS-Realtime (no API key required)
+  gtfs_rt_trip_updates_url: "https://toronto.ca/ext/opendata/GTFS-RT/tripUpdates.pb"
+  gtfs_rt_vehicle_positions_url: "https://toronto.ca/ext/opendata/GTFS-RT/vehiclePositions.pb"
+
+  # 511 Ontario Traffic Events (no API key required)
+  on511_url: "https://api.511on.ca/traffic/Events?format=json"
+
+# ── HERE Traffic Flow API (optional, requires free API key) ──────────────────
+# Sign up: https://developer.here.com/  — Free tier: 250,000 requests/month
+here:
+  api_key: ""   # set your HERE API key here, or pass --here-key on the CLI
+
+experiment:
+  default_duration_sec: 300
+  default_update_freq_hz: 1.0
+  default_query_rate_hz: 5.0
+  default_workers: 4
+  update_magnitude_pct: 0.30   # max edge weight change per update (30%) — synthetic mode only
+  min_path_hops: 3
+  max_path_hops: 20
+  warm_up_sec: 30              # queries run but not recorded during warm-up
+
+  # Live data refresh interval (seconds) — how often background thread re-fetches APIs
+  live_refresh_interval_sec: 60
