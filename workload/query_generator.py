@@ -18,6 +18,15 @@ CONFIG_PATH = BASE_DIR / "config" / "settings.yaml"
 
 
 def load_config():
+    """Load configuration from settings.yaml.
+    
+    Returns:
+        dict: Config with postgres, neo4j, toronto, and experiment keys.
+        
+    Notes:
+        Used by QueryGenerator to establish database connections.
+        Node sample size controlled by sample_size parameter in __init__.
+    """
     with open(CONFIG_PATH) as f:
         return yaml.safe_load(f)
 
