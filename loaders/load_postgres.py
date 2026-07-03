@@ -30,6 +30,13 @@ def load_config():
 
 
 def get_connection(cfg):
+    """Create and return a psycopg2 connection using config settings.
+    
+    Args:
+        cfg (dict): Configuration dictionary with postgres connection details.
+    Returns:
+        psycopg2.connection: Active database connection.
+    """
     pg = cfg["postgres"]
     return psycopg2.connect(
         host=pg["host"], port=pg["port"],
