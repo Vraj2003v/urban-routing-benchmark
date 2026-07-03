@@ -45,6 +45,11 @@ RESULTS_DIR = BASE_DIR / "results"
 
 
 def load_config():
+    """Load configuration from settings.yaml.
+    
+    Returns:
+        dict: Config with postgres, neo4j, toronto, and experiment keys.
+    """
     with open(CONFIG_PATH) as f:
         return yaml.safe_load(f)
 
