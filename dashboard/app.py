@@ -1,7 +1,7 @@
-"""
-app.py — Urban Routing Benchmark Dashboard v6
+﻿"""
+app.py â€” Urban Routing Benchmark Dashboard v6
 Tabs: Dashboard | About & Map
-Usage: python dashboard/app.py  →  http://localhost:8050
+Usage: python dashboard/app.py  â†’  http://localhost:8050
 """
 
 import sys, json, time
@@ -30,9 +30,19 @@ PG_COLOR  = "#185FA5"
 N4J_COLOR = "#0F6E56"
 REG_COLOR = "#D85A30"
 
-# ── Helpers ──────────────────────────────────────────────────────────
+# â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def list_files():
+    """Scan the results directory for benchmark CSV files.
+    
+    Returns:
+        list: Sorted list of CSV filenames excluding plan analysis files.
+        
+    Notes:
+        Dashboard auto-refreshes every 15 seconds via dcc.Interval.
+        New result files appear automatically without restarting the app.
+        Files named with plan_ prefix are excluded as they are analysis outputs.
+    """
     if not RESULTS_DIR.exists(): return []
     return sorted([f.name for f in RESULTS_DIR.glob("*.csv") if "plan" not in f.name])
 
@@ -65,7 +75,7 @@ def get_snapshot():
         }
     except: return None
 
-# ── Toronto incident hotspots (known locations) ───────────────────────
+# â”€â”€ Toronto incident hotspots (known locations) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 TORONTO_HOTSPOTS = [
     (43.6426, -79.3871, "Gardiner Expressway", "Major"),
     (43.7731, -79.4137, "Hwy 401 / Allen Rd",  "Moderate"),
@@ -79,7 +89,7 @@ TORONTO_HOTSPOTS = [
     (43.7890, -79.2940, "Hwy 401 / Kennedy",   "Moderate"),
 ]
 
-# ── Build Toronto map using Plotly (no folium needed) ─────────────────
+# â”€â”€ Build Toronto map using Plotly (no folium needed) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def build_map(snap, dark):
     bg = "#1A1D27" if dark else "#F4F5F7"
@@ -103,7 +113,7 @@ def build_map(snap, dark):
     if incidents:
         inc_lats = [i["lat"] for i in incidents]
         inc_lons = [i["lon"] for i in incidents]
-        inc_text = [f"🚨 {i.get('type','Incident')}<br>Severity: {i.get('severity','Unknown')}"
+        inc_text = [f"ðŸš¨ {i.get('type','Incident')}<br>Severity: {i.get('severity','Unknown')}"
                     for i in incidents]
         sev_color = {"Minor":"#ECC94B","Moderate":"#ED8936","Major":"#E53E3E","Critical":"#822727"}
         colors = [sev_color.get(i.get("severity","Minor"), "#ECC94B") for i in incidents]
@@ -145,7 +155,7 @@ def build_map(snap, dark):
     ]
     stop_lats = [s[0] for s in ttc_stops]
     stop_lons = [s[1] for s in ttc_stops]
-    stop_text = [f"🚇 {s[2]}" for s in ttc_stops]
+    stop_text = [f"ðŸš‡ {s[2]}" for s in ttc_stops]
     fig.add_trace(go.Scattermapbox(
         lat=stop_lats, lon=stop_lons,
         mode="markers",
@@ -165,29 +175,29 @@ def build_map(snap, dark):
     )
     return fig
 
-# ── Layout ───────────────────────────────────────────────────────────
+# â”€â”€ Layout â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 app.layout = html.Div([
     dcc.Store(id="dark-mode", data=False),
     dcc.Interval(id="interval", interval=2000, n_intervals=0),
 
-    # ── Navbar ───────────────────────────────────────────────────────
+    # â”€â”€ Navbar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     html.Div([
         html.Div([
             html.Div([
-                html.Span("◈", style={"color":N4J_COLOR,"fontSize":"22px","marginRight":"10px"}),
+                html.Span("â—ˆ", style={"color":N4J_COLOR,"fontSize":"22px","marginRight":"10px"}),
                 html.Span("Urban Routing Benchmark",
                           style={"fontSize":"16px","fontWeight":"700","letterSpacing":"-0.3px"}),
                 html.Span(" v6", style={"fontSize":"11px","color":"#888","marginLeft":"4px"}),
             ], style={"display":"flex","alignItems":"center"}),
 
-            dcc.Dropdown(id="file-sel", placeholder="Select result file…", clearable=False,
+            dcc.Dropdown(id="file-sel", placeholder="Select result fileâ€¦", clearable=False,
                          style={"width":"260px","fontSize":"13px"}),
 
             html.Div([
                 html.Div(id="live-badge"),
                 html.Div(id="run-status"),
-                html.Button("🌙", id="dark-btn", n_clicks=0,
+                html.Button("ðŸŒ™", id="dark-btn", n_clicks=0,
                             style={"background":"none","border":"1px solid #ddd",
                                    "borderRadius":"8px","padding":"5px 10px",
                                    "cursor":"pointer","fontSize":"15px","marginLeft":"10px"}),
@@ -198,16 +208,16 @@ app.layout = html.Div([
 
     html.Div(id="status-bar"),
 
-    # ── Tabs ─────────────────────────────────────────────────────────
+    # â”€â”€ Tabs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     html.Div([
         dcc.Tabs(id="tabs", value="tab-dashboard",
                  style={"maxWidth":"1400px","margin":"0 auto","padding":"0 24px"},
                  children=[
-            dcc.Tab(label="📊  Dashboard", value="tab-dashboard",
+            dcc.Tab(label="ðŸ“Š  Dashboard", value="tab-dashboard",
                     style={"fontWeight":"500","fontSize":"13px","padding":"10px 20px"},
                     selected_style={"fontWeight":"600","fontSize":"13px",
                                     "borderTop":f"3px solid {N4J_COLOR}","padding":"10px 20px"}),
-            dcc.Tab(label="🗺️  Map & About", value="tab-about",
+            dcc.Tab(label="ðŸ—ºï¸  Map & About", value="tab-about",
                     style={"fontWeight":"500","fontSize":"13px","padding":"10px 20px"},
                     selected_style={"fontWeight":"600","fontSize":"13px",
                                     "borderTop":f"3px solid {PG_COLOR}","padding":"10px 20px"}),
@@ -216,9 +226,9 @@ app.layout = html.Div([
 
     html.Div(id="tab-content"),
 
-    # ── Footer ───────────────────────────────────────────────────────
+    # â”€â”€ Footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     html.Div([
-        html.Span("Urban Routing Benchmark · Group 9 · University of Windsor",
+        html.Span("Urban Routing Benchmark Â· Group 9 Â· University of Windsor",
                   style={"fontSize":"12px","color":"#888"}),
         html.Div(id="footer-ts", style={"fontSize":"12px","color":"#bbb"}),
     ], style={"display":"flex","justifyContent":"space-between",
@@ -230,7 +240,7 @@ app.layout = html.Div([
           "fontFamily":"-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif"})
 
 
-# ── Dark mode ─────────────────────────────────────────────────────────
+# â”€â”€ Dark mode â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 @app.callback(
     Output("dark-mode","data"),
     Input("dark-btn","n_clicks"),
@@ -258,10 +268,10 @@ def apply_theme(dark):
         nav  = {"background":"#FFFFFF","borderBottom":"1px solid #E2E8F0",
                 "position":"sticky","top":"0","zIndex":"100",
                 "boxShadow":"0 1px 3px rgba(0,0,0,0.06)"}
-    return page, nav, "☀️" if dark else "🌙"
+    return page, nav, "â˜€ï¸" if dark else "ðŸŒ™"
 
 
-# ── File list ─────────────────────────────────────────────────────────
+# â”€â”€ File list â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 @app.callback(
     Output("file-sel","options"), Output("file-sel","value"),
     Input("interval","n_intervals"), State("file-sel","value"),
@@ -276,7 +286,7 @@ def refresh_files(n, current):
     return opts, default
 
 
-# ── Tab content router ────────────────────────────────────────────────
+# â”€â”€ Tab content router â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 @app.callback(
     Output("tab-content","children"),
     Input("tabs","value"),
@@ -304,7 +314,7 @@ def build_dashboard_tab():
                     html.Div([
                         html.Span("Query Latency Over Time",
                                   style={"fontSize":"13px","fontWeight":"600"}),
-                        html.Span(" — rolling average",
+                        html.Span(" â€” rolling average",
                                   style={"fontSize":"12px","color":"#888","marginLeft":"6px"}),
                     ]),
                     html.Div([
@@ -335,14 +345,14 @@ def build_dashboard_tab():
         html.Div([
             html.Div([
                 html.Div([html.Span("Plan Stability",style={"fontSize":"13px","fontWeight":"600"}),
-                          html.Span(" — ✕ = optimizer replanned",style={"fontSize":"12px","color":"#888","marginLeft":"6px"})],
+                          html.Span(" â€” âœ• = optimizer replanned",style={"fontSize":"12px","color":"#888","marginLeft":"6px"})],
                          style={"padding":"14px 16px 0"}),
                 dcc.Graph(id="chart-plan",config={"displayModeBar":False},style={"height":"200px"}),
             ],id="card-plan",style={"flex":"1","borderRadius":"12px","overflow":"hidden",
                                      "border":"1px solid #e2e8f0","background":"#fff"}),
             html.Div([
                 html.Div([html.Span("Percentile Comparison",style={"fontSize":"13px","fontWeight":"600"}),
-                          html.Span(" — P50/P75/P95/P99",style={"fontSize":"12px","color":"#888","marginLeft":"6px"})],
+                          html.Span(" â€” P50/P75/P95/P99",style={"fontSize":"12px","color":"#888","marginLeft":"6px"})],
                          style={"padding":"14px 16px 0"}),
                 dcc.Graph(id="chart-pct",config={"displayModeBar":False},style={"height":"200px"}),
             ],id="card-pct",style={"width":"360px","borderRadius":"12px","overflow":"hidden",
@@ -395,22 +405,22 @@ def build_about_tab(dark):
 
     return html.Div([
 
-        # ── Hero section ─────────────────────────────────────────────
+        # â”€â”€ Hero section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         html.Div([
             html.Div([
                 html.H2("What is this project doing?",
                         style={"fontSize":"24px","fontWeight":"700","margin":"0 0 12px","color":txt}),
                 html.P([
                     "This dashboard shows a live experiment comparing two different types of databases ",
-                    "— ", html.Strong("Neo4j", style={"color":N4J_COLOR}), " and ",
+                    "â€” ", html.Strong("Neo4j", style={"color":N4J_COLOR}), " and ",
                     html.Strong("PostgreSQL", style={"color":PG_COLOR}),
-                    " — to find out which one is better at handling ",
+                    " â€” to find out which one is better at handling ",
                     html.Strong("real-time traffic routing"), " for a city like Toronto."
                 ], style={"fontSize":"14px","color":muted,"lineHeight":"1.8","maxWidth":"700px"}),
             ], style={"flex":"1"}),
             html.Div([
                 html.Div([
-                    html.P("🏙️", style={"fontSize":"40px","margin":"0","textAlign":"center"}),
+                    html.P("ðŸ™ï¸", style={"fontSize":"40px","margin":"0","textAlign":"center"}),
                     html.P("Toronto, ON", style={"fontWeight":"600","fontSize":"13px",
                                                   "margin":"8px 0 2px","textAlign":"center","color":txt}),
                     html.P("38,170 intersections\n99,638 road segments",
@@ -421,41 +431,41 @@ def build_about_tab(dark):
         ], style={"display":"flex","alignItems":"center","gap":"20px",
                   "padding":"24px 24px 16px","maxWidth":"1400px","margin":"0 auto"}),
 
-        # ── Explain cards ────────────────────────────────────────────
+        # â”€â”€ Explain cards â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         html.Div([
-            card("🗃️", "What is a Database?",
-                 "A database is like a giant, super-organised filing cabinet that a computer uses to store and find information very quickly. In this project, the database stores a map of Toronto's roads — every street, intersection, and traffic detail.",
+            card("ðŸ—ƒï¸", "What is a Database?",
+                 "A database is like a giant, super-organised filing cabinet that a computer uses to store and find information very quickly. In this project, the database stores a map of Toronto's roads â€” every street, intersection, and traffic detail.",
                  "#553C9A"),
-            card("🟠", "Neo4j — Graph Database",
+            card("ðŸŸ ", "Neo4j â€” Graph Database",
                  "Neo4j thinks of roads like a web of connected dots (intersections) and lines (roads). It's designed specifically for networks, so finding the shortest route between two places feels natural. Think of it like Google Maps' internal brain.",
                  N4J_COLOR),
-            card("🔵", "PostgreSQL — Relational Database",
+            card("ðŸ”µ", "PostgreSQL â€” Relational Database",
                  "PostgreSQL stores roads in spreadsheet-like tables (rows and columns). It's the world's most popular general-purpose database. We added a routing extension called pgRouting to make it handle map queries.",
                  PG_COLOR),
-            card("🚦", "What are Edge Weights?",
-                 "Every road segment has a 'cost' — how long it takes to drive through it. In real life this changes constantly: traffic jams, accidents, road closures. We call these changes 'dynamic edge-weight updates'. This is what we're testing!",
+            card("ðŸš¦", "What are Edge Weights?",
+                 "Every road segment has a 'cost' â€” how long it takes to drive through it. In real life this changes constantly: traffic jams, accidents, road closures. We call these changes 'dynamic edge-weight updates'. This is what we're testing!",
                  REG_COLOR),
         ], style={"display":"grid","gridTemplateColumns":"repeat(4,1fr)","gap":"12px",
                   "padding":"0 24px 16px","maxWidth":"1400px","margin":"0 auto"}),
 
-        # ── How it works steps ───────────────────────────────────────
+        # â”€â”€ How it works steps â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         html.Div([
             html.Div([
                 html.P("How the experiment works",
                        style={"fontSize":"15px","fontWeight":"700","margin":"0 0 4px","color":txt}),
-                html.P("Step by step — what's actually happening right now",
+                html.P("Step by step â€” what's actually happening right now",
                        style={"fontSize":"12px","color":muted,"margin":"0 0 16px"}),
                 step(1, "Real Toronto road map loaded",
-                     f"We downloaded Toronto's entire road network from OpenStreetMap — {38170:,} intersections and {99638:,} road segments. Both databases have the same map loaded.",
+                     f"We downloaded Toronto's entire road network from OpenStreetMap â€” {38170:,} intersections and {99638:,} road segments. Both databases have the same map loaded.",
                      "#553C9A"),
                 step(2, "Live traffic data collected",
                      f"We collected {n_routes} TTC bus/streetcar routes with real delay data, and placed {n_incidents} traffic incident markers at known Toronto hotspots (Gardiner, Hwy 401, DVP, etc.).",
                      N4J_COLOR),
                 step(3, "Road costs updated every 2 seconds",
-                     "Every 2 seconds, we pick 50 random road segments and update their travel time based on how close they are to a real incident. A road near a major accident gets a 4× cost penalty.",
+                     "Every 2 seconds, we pick 50 random road segments and update their travel time based on how close they are to a real incident. A road near a major accident gets a 4Ã— cost penalty.",
                      REG_COLOR),
                 step(4, "Shortest path queries fired at both databases",
-                     "At the same time, we ask both databases 5 routing questions per second — 'what's the fastest route from point A to point B?' — and measure how long each database takes to answer.",
+                     "At the same time, we ask both databases 5 routing questions per second â€” 'what's the fastest route from point A to point B?' â€” and measure how long each database takes to answer.",
                      PG_COLOR),
                 step(5, "Results measured and compared",
                      "We record every query's response time and whether the database had to recompute its strategy (called a 'plan regression'). The charts on the Dashboard tab show this in real time.",
@@ -489,7 +499,7 @@ def build_about_tab(dark):
                 html.Div([
                     html.P("Why does this matter?",
                            style={"fontSize":"14px","fontWeight":"700","margin":"0 0 10px","color":txt}),
-                    html.P("Apps like Google Maps, Waze, or a city's emergency dispatch system need to find the fastest route in real time — while traffic is constantly changing. Choosing the wrong database could mean slower route calculations, which in an emergency could cost lives. This research helps city planners make the right choice.",
+                    html.P("Apps like Google Maps, Waze, or a city's emergency dispatch system need to find the fastest route in real time â€” while traffic is constantly changing. Choosing the wrong database could mean slower route calculations, which in an emergency could cost lives. This research helps city planners make the right choice.",
                            style={"fontSize":"12px","color":muted,"lineHeight":"1.7","margin":"0"}),
                 ], style={"background":f"{N4J_COLOR}0d","border":f"1px solid {N4J_COLOR}25",
                           "borderRadius":"10px","padding":"14px","marginTop":"16px"}),
@@ -499,12 +509,12 @@ def build_about_tab(dark):
         ], style={"display":"flex","gap":"14px","padding":"0 24px 16px",
                   "maxWidth":"1400px","margin":"0 auto"}),
 
-        # ── Map ──────────────────────────────────────────────────────
+        # â”€â”€ Map â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         html.Div([
             html.Div([
-                html.P("🗺️  Toronto Road Network & Live Incident Map",
+                html.P("ðŸ—ºï¸  Toronto Road Network & Live Incident Map",
                        style={"fontSize":"15px","fontWeight":"700","margin":"0 0 4px","color":txt}),
-                html.P("Orange/red markers = traffic incidents · Blue markers = TTC key stations · Green box = OSM data region",
+                html.P("Orange/red markers = traffic incidents Â· Blue markers = TTC key stations Â· Green box = OSM data region",
                        style={"fontSize":"12px","color":muted,"margin":"0"}),
             ], style={"padding":"16px 20px 0"}),
             dcc.Graph(id="map-chart", config={"displayModeBar":True,"scrollZoom":True},
@@ -516,7 +526,7 @@ def build_about_tab(dark):
     ], style={"background":bg})
 
 
-# ── Tab router callback ───────────────────────────────────────────────
+# â”€â”€ Tab router callback â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 @app.callback(
     Output("tab-content","children"),
     Input("tabs","value"),
@@ -528,7 +538,7 @@ def render_tab(tab, dark):
     return build_dashboard_tab()
 
 
-# ── Map update ───────────────────────────────────────────────────────
+# â”€â”€ Map update â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 @app.callback(
     Output("map-chart","figure"),
     Input("interval","n_intervals"),
@@ -539,7 +549,7 @@ def update_map(n, dark):
     return build_map(snap, dark)
 
 
-# ── Status bar + badges ──────────────────────────────────────────────
+# â”€â”€ Status bar + badges â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 @app.callback(
     Output("status-bar","children"),
     Output("live-badge","children"),
@@ -556,17 +566,17 @@ def update_status(n, filename, dark):
         has  = snap["routes"] > 0 or len(snap["incidents"]) > 0
         dc   = "#1D9E75" if has else "#BA7517"
         lbl  = "LIVE DATA ACTIVE" if has else "SYNTHETIC FALLBACK"
-        det  = (f"{snap['routes']} TTC routes · {len(snap['incidents'])} incidents · "
-                f"{snap['file']} · {snap['ts']} EDT")
+        det  = (f"{snap['routes']} TTC routes Â· {len(snap['incidents'])} incidents Â· "
+                f"{snap['file']} Â· {snap['ts']} EDT")
         badge = html.Div([
-            html.Span("●",style={"color":dc,"fontSize":"10px","marginRight":"5px"}),
+            html.Span("â—",style={"color":dc,"fontSize":"10px","marginRight":"5px"}),
             html.Span(lbl,style={"fontSize":"11px","fontWeight":"700","color":dc,"letterSpacing":"0.4px"}),
         ],style={"display":"flex","alignItems":"center","padding":"3px 10px",
                   "background":f"{dc}18","borderRadius":"20px","border":f"1px solid {dc}35"})
         sbar = html.Div([
             html.Div([
-                html.Span("●",style={"color":dc,"fontSize":"11px","marginRight":"6px"}),
-                html.Span(lbl+" · ",style={"fontSize":"12px","fontWeight":"700","color":dc}),
+                html.Span("â—",style={"color":dc,"fontSize":"11px","marginRight":"6px"}),
+                html.Span(lbl+" Â· ",style={"fontSize":"12px","fontWeight":"700","color":dc}),
                 html.Span(det,style={"fontSize":"12px","color":muted}),
             ],style={"display":"flex","alignItems":"center","maxWidth":"1400px","margin":"0 auto","flexWrap":"wrap"}),
         ],style={"padding":"7px 24px","background":f"{dc}0c","borderBottom":f"1px solid {dc}22"})
@@ -576,7 +586,7 @@ def update_status(n, filename, dark):
 
     active = is_run_active(filename) if filename else False
     run_pill = html.Div([
-        html.Span("⬤ ",style={"color":"#E53E3E","fontSize":"9px"}),
+        html.Span("â¬¤ ",style={"color":"#E53E3E","fontSize":"9px"}),
         html.Span("RECORDING",style={"fontSize":"10px","fontWeight":"700",
                                       "color":"#E53E3E","letterSpacing":"0.4px"}),
     ],style={"display":"flex","alignItems":"center","padding":"3px 9px",
@@ -587,7 +597,7 @@ def update_status(n, filename, dark):
     return sbar, badge, run_pill, ts
 
 
-# ── Main dashboard data callback ──────────────────────────────────────
+# â”€â”€ Main dashboard data callback â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 @app.callback(
     Output("kpi-row","children"),
     Output("winner-row","children"),
@@ -646,8 +656,8 @@ def update_dashboard(filename, window, show_reg, dark, n):
 
     def q(s,p):   return s["latency_ms"].quantile(p/100) if len(s) else 0
     def mean_(s): return s["latency_ms"].mean() if len(s) else 0
-    def med(s):   return f"{q(s,50):.1f} ms" if len(s) else "—"
-    def p95(s):   return f"{q(s,95):.1f} ms" if len(s) else "—"
+    def med(s):   return f"{q(s,50):.1f} ms" if len(s) else "â€”"
+    def p95(s):   return f"{q(s,95):.1f} ms" if len(s) else "â€”"
     def cnt(s):   return f"{len(s):,}"
     def pchg(s):
         if s.empty: return 0
@@ -667,8 +677,8 @@ def update_dashboard(filename, window, show_reg, dark, n):
                   "borderRadius":"10px","padding":"14px 16px"})
 
     kpis=[
-        kpi("PG Queries",cnt(pg),f"P95 · {p95(pg)}",PG_COLOR,not n4j_wins),
-        kpi("Neo4j Queries",cnt(n4j),f"P95 · {p95(n4j)}",N4J_COLOR,n4j_wins),
+        kpi("PG Queries",cnt(pg),f"P95 Â· {p95(pg)}",PG_COLOR,not n4j_wins),
+        kpi("Neo4j Queries",cnt(n4j),f"P95 Â· {p95(n4j)}",N4J_COLOR,n4j_wins),
         kpi("PG Median",med(pg),"milliseconds",PG_COLOR,not n4j_wins),
         kpi("Neo4j Median",med(n4j),"milliseconds",N4J_COLOR,n4j_wins),
         kpi("PG Replans",str(pg_ch),"cache misses",REG_COLOR if pg_ch>5 else muted),
@@ -679,10 +689,10 @@ def update_dashboard(filename, window, show_reg, dark, n):
         ratio=mean_(pg)/mean_(n4j) if mean_(n4j)>0 else 1
         wc=N4J_COLOR if n4j_wins else PG_COLOR
         wname="Neo4j" if n4j_wins else "PostgreSQL"
-        wratio=f"{ratio:.1f}×" if n4j_wins else f"{1/ratio:.1f}×"
+        wratio=f"{ratio:.1f}Ã—" if n4j_wins else f"{1/ratio:.1f}Ã—"
         winner=html.Div([
-            html.Span("🏆 ",style={"fontSize":"15px"}),
-            html.Span(f"{wname} is {wratio} faster  ·  Neo4j {mean_(n4j):.0f} ms vs PostgreSQL {mean_(pg):.0f} ms mean  ·  PG replans: {pg_ch}  ·  Neo4j replans: {n4j_ch}",
+            html.Span("ðŸ† ",style={"fontSize":"15px"}),
+            html.Span(f"{wname} is {wratio} faster  Â·  Neo4j {mean_(n4j):.0f} ms vs PostgreSQL {mean_(pg):.0f} ms mean  Â·  PG replans: {pg_ch}  Â·  Neo4j replans: {n4j_ch}",
                       style={"fontSize":"13px","fontWeight":"600","color":wc}),
         ],style={"padding":"10px 16px","background":f"{wc}0d","border":f"1px solid {wc}28",
                   "borderRadius":"10px","display":"flex","alignItems":"center"})
@@ -777,7 +787,7 @@ def update_dashboard(filename, window, show_reg, dark, n):
         html.Table([
             html.Thead(html.Tr([html.Th("System",th),html.Th("Timestamp",th),
                                  html.Th("Latency",th),html.Th("Event",th)])),
-            html.Tbody(rows or [html.Tr([html.Td("No regression events detected ✓",colSpan=4,
+            html.Tbody(rows or [html.Tr([html.Td("No regression events detected âœ“",colSpan=4,
                 style={"padding":"20px","textAlign":"center","color":muted,"fontSize":"12px"})])]),
         ],style={"width":"100%","borderCollapse":"collapse"}),
     ])
@@ -805,11 +815,11 @@ def update_dashboard(filename, window, show_reg, dark, n):
         srow("Median",med(pg),med(n4j)),
         srow("P95",p95(pg),p95(n4j)),
         srow("P99",f"{q(pg,99):.1f} ms",f"{q(n4j,99):.1f} ms"),
-        srow("Std dev",f"{pg['latency_ms'].std():.1f} ms" if len(pg) else "—",
-             f"{n4j['latency_ms'].std():.1f} ms" if len(n4j) else "—"),
+        srow("Std dev",f"{pg['latency_ms'].std():.1f} ms" if len(pg) else "â€”",
+             f"{n4j['latency_ms'].std():.1f} ms" if len(n4j) else "â€”"),
         srow("Plan switches",str(pg_ch),str(n4j_ch)),
         srow("Cache hit rate",cache_pg,cache_n4j),
-        html.Div([html.Span("Toronto OSM · 38,170 nodes · 99,638 edges",
+        html.Div([html.Span("Toronto OSM Â· 38,170 nodes Â· 99,638 edges",
                              style={"fontSize":"10px","color":muted})],
                  style={"padding":"10px 14px","borderTop":f"1px solid {brd}"}),
     ])
