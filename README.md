@@ -23,6 +23,11 @@ dynamic, high-frequency edge-weight updates on a real Toronto urban road network
 
 This study builds on literature spanning graph database performance, pgRouting benchmarking, dynamic edge-weight routing, and query plan stability. Graph-native engines outperform relational systems on traversal-heavy queries via index-free adjacency, while pgRouting exhibits plan instability under frequent cost updates. Our study extends this by quantifying plan-cache hit rates across five update-frequency tiers on a real Toronto road network with live Canadian open data feeds.
 
+
+## Related Work
+
+This study builds on literature spanning graph database performance, pgRouting benchmarking, dynamic edge-weight routing, and query plan stability. Graph-native engines outperform relational systems on traversal-heavy queries via index-free adjacency, while pgRouting exhibits plan instability under frequent cost updates. Our study extends this by quantifying plan-cache hit rates across five update-frequency tiers on a real Toronto road network with live Canadian open data feeds.
+
 ## Prerequisites
 
 ### System Requirements
