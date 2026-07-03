@@ -9,3 +9,6 @@
 3. Cross-System Regression Detection: A unified plan-regression detector operates across both PostgreSQL (EXPLAIN ANALYZE) and Neo4j (PROFILE), enabling direct comparison of optimizer behaviour under identical workloads.
 
 4. Update Frequency as Independent Variable: Systematically varying update frequency (0.1, 1.0, 5.0, 10.0 Hz) across random, sinusoidal, and spike patterns isolates the effect of update rate on query plan stability.
+
+## Impact
+The plan-cache instability finding has direct implications for database selection in real-time urban routing systems. Operators requiring sub-second query response under high-frequency edge updates should prefer graph-native systems such as Neo4j over relational alternatives with graph extensions.
